@@ -1,0 +1,146 @@
+{
+  "name": "git-tree-visualizer",
+  "displayName": "Git Tree Visualizer",
+  "description": "A clear, interactive visualization of your git commit graph, branches and worktrees.",
+  "version": "0.2.2",
+  "publisher": "jdromano",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "git",
+    "graph",
+    "tree",
+    "worktree",
+    "branches"
+  ],
+  "activationEvents": [
+    "onWebviewPanel:gitTreeVisualizer"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitTreeVisualizer.show",
+        "title": "Open Git Tree in Editor",
+        "category": "Git Tree",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "gitTreeVisualizer.refresh",
+        "title": "Refresh",
+        "category": "Git Tree",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "gitTreeVisualizer.show",
+          "group": "navigation",
+          "when": "scmProvider == git"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "gitTreeVisualizer.refresh",
+          "when": "view == gitTreeVisualizer.tree",
+          "group": "navigation@1"
+        },
+        {
+          "command": "gitTreeVisualizer.show",
+          "when": "view == gitTreeVisualizer.tree",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Git Tree Visualizer",
+      "properties": {
+        "gitTreeVisualizer.maxCommits": {
+          "type": "number",
+          "default": 1000,
+          "minimum": 50,
+          "description": "Maximum number of commits loaded initially (use \"Load more\" in the view for more)."
+        },
+        "gitTreeVisualizer.productionBranch": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "markdownDescription": "The production branch the tree grows around, for example `main` or `origin/production`. Every other branch is laid out and compared against it. Leave empty to detect it (`origin/HEAD`, then `main`, `master`, `trunk`, `develop`). You can also right-click a branch in the tree and choose *Set as production branch*."
+        },
+        "gitTreeVisualizer.defaultView": {
+          "type": "string",
+          "enum": [
+            "tree",
+            "graph"
+          ],
+          "enumDescriptions": [
+            "Branch tree: every branch as a node growing from the production branch.",
+            "Commit graph with lanes."
+          ],
+          "default": "tree",
+          "description": "Initial view."
+        },
+        "gitTreeVisualizer.defaultMode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "topology"
+          ],
+          "enumDescriptions": [
+            "Show every commit.",
+            "Show only branch tips, worktree heads, forks and merges; linear runs are collapsed."
+          ],
+          "default": "full",
+          "description": "Initial mode of the commit graph view."
+        },
+        "gitTreeVisualizer.showRemoteBranches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include remote-tracking branches in the graph."
+        },
+        "gitTreeVisualizer.showTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include tags in the graph."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gitTreeVisualizer",
+          "title": "Git Tree",
+          "icon": "media/activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "gitTreeVisualizer": [
+        {
+          "type": "webview",
+          "id": "gitTreeVisualizer.tree",
+          "name": "Branches",
+          "icon": "media/activity.svg"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node ./out/test/graph.test.js",
+    "package": "npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "~1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
